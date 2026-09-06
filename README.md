@@ -1,2 +1,9 @@
-# air-quality-benzene-prediction-dnn
-Deep neural network soft sensor calibrating cheap metal-oxide sensors against reference-grade benzene readings — chronological splits, 13 logged experiments and two deliberate leakage diagnostics. Test R² 0.914. MSc coursework (M507C), graded 75/100.
+Reference-grade benzene analysers are too expensive to deploy street by street; low-cost metal-oxide sensors are cheap but noisy and only indirectly related to benzene. This project trains a soft sensor that maps a multi-channel sensor array plus temperature and humidity onto true hourly benzene concentration, using a year of co-located readings from the UCI Air Quality dataset (De Vito et al., 2008).
+
+The methodological core of the project is leakage control, treated as a first-class design problem rather than a footnote. The PT08.S2(NMHC) channel correlates 0.98 with the target and is removed as a proxy; the train/validation/test split is strictly chronological so later hours never inform earlier ones; and imputation and scaling are fitted on the training partition only. A compact feed-forward network (64→32, L2, batch normalisation, dropout, early stopping) is selected from 13 logged configurations, then evaluated once on the held-out final segment of the timeline: MAE 1.22 µg/m³, RMSE 1.78, R² 0.914 — an error band that is interpretable against the EU annual limit of 5 µg/m³.
+
+Two configurations were run deliberately as leakage diagnostics and reported but not selected: a random shuffled split (R² 0.971) and one keeping the proxy sensor (R² 0.997). Showing why those scores are fiction, rather than claiming them, is the part of this notebook I am most pleased with.
+
+Submitted for M507C (Methods of Prediction) and graded 75/100. The experimental log and the leakage discipline earned the marks; looking back, the notebook would be stronger with plotted learning curves and residual diagnostics instead of tabulated losses, and with an LSTM baseline to test whether temporal dependence adds anything over per-hour prediction.
+
+**Stack:** Python · TensorFlow / Keras · scikit-learn · pandas · NumPy
